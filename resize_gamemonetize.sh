@@ -19,7 +19,7 @@ SOURCES=(
 
 mkdir -p gamemonetize
 
-echo "=== GameMonetize: resize per source orientation ==="
+echo "=== GameMonetize ==="
 echo "  SQUARE → 512×512"
 echo "  LANDSCAPE → 512×384"
 echo "  PORTRAIT → 340×512"
@@ -34,16 +34,13 @@ for src in "${SOURCES[@]}"; do
   
   if [ "$w" -gt "$h" ]; then
     orientation="landscape"
-    tw=512
-    th=384
+    tw=512; th=384
   elif [ "$h" -gt "$w" ]; then
     orientation="portrait"
-    tw=340
-    th=512
+    tw=340; th=512
   else
     orientation="square"
-    tw=512
-    th=512
+    tw=512; th=512
   fi
   
   echo "$shortname: ${w}x${h} (${orientation}) → ${tw}x${th}"
@@ -62,6 +59,5 @@ for f in gamemonetize/*.png; do
   dims=$(identify -format '%wx%h' "$f")
   echo "  $name: $dims"
 done
-
 echo ""
 echo "DONE!"
