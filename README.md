@@ -8,9 +8,9 @@ Assets redimensionnés et organisés par éditeur de jeux web.
 Assets/
 ├── originals/              ← Images sources (7 PNG originaux)
 ├── playgama/               ← Assets pour Playgama
-│   ├── icons/              ← 512×512 px (carré)
-│   ├── thumbnails/         ← 800×450 px (16:9)
-│   └── screenshots/        ← 1280×720 px (16:9)
+│   ├── cover-landscape/    ← 1920×1080 px (16:9 paysage)
+│   ├── cover-portrait/     ← 1080×1920 px (9:16 portrait)
+│   └── cover-square/       ← 800×800 px (1:1 carré)
 ├── crazygames/             ← Assets pour CrazyGames
 │   ├── icons/              ← 512×512 px (carré)
 │   ├── thumbnails/         ← 800×450 px (16:9)
@@ -35,9 +35,9 @@ Assets/
 
 ## Dimensions par plateforme
 
-| Plateforme        | Icône      | Thumbnail    | Screenshot   | Format |
-|-------------------|------------|--------------|--------------|--------|
-| **Playgama**      | 512×512    | 800×450      | 1280×720     | PNG    |
+| Plateforme        | Cover Landscape | Cover Portrait | Cover Square | Format |
+|-------------------|-----------------|----------------|--------------|--------|
+| **Playgama**      | 1920×1080       | 1080×1920      | 800×800      | PNG    |
 | **CrazyGames**    | 512×512    | 800×450      | 1280×720     | PNG    |
 | **Yandex Games**  | 200×200    | 1280×720     | 1280×720     | PNG    |
 | **GameDistribution** | 200×200 | 800×450      | 1280×720     | PNG    |

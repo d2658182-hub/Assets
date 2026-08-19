@@ -17,94 +17,182 @@ SOURCES=(
   "file_00000000e8ec8246a74862c95772e2cf.png"
 )
 
-# Output dimensions per platform
-# Format: PLATFORM|ICON_W|ICON_H|THUMBNAIL_W|THUMBNAIL_H|SCREENSHOT_W|SCREENSHOT_H
-PLATFORMS=(
-  "playgama|512|512|800|450|1280|720"
-  "crazygames|512|512|800|450|1280|720"
-  "yandex-games|200|200|1280|720|1280|720"
-  "gamedistribution|200|200|800|450|1280|720"
-  "gamepix|200|200|800|450|1280|720"
-  "gamemonetize|200|200|800|450|1280|720"
-)
+echo "=== Resize Assets for Game Portals ==="
+echo ""
+echo "NOTE: Playgama dimensions are verified from their developer docs."
+echo "Other platforms use standard industry dimensions."
+echo ""
 
-mkdir -p originals
+# === PLAYGAMA (verified dimensions) ===
+echo "--- Processing: playgama (VERIFIED) ---"
+echo "  Cover Landscape: 1920×1080"
+echo "  Cover Portrait: 1080×1920"
+echo "  Cover Square: 800×800"
 
-# Copy originals
+mkdir -p playgama/cover-landscape
+mkdir -p playgama/cover-portrait
+mkdir -p playgama/cover-square
+
 for src in "${SOURCES[@]}"; do
-  cp "$src" originals/ 2>/dev/null || true
+  basename="${src%.png}"
+  shortname="${basename##*_}"
+  
+  convert "$src" -resize "1920x1080" -gravity center -extent "1920x1080" -quality 95 \
+    "playgama/cover-landscape/${shortname}.png"
+  
+  convert "$src" -resize "1080x1920" -gravity center -extent "1080x1920" -quality 95 \
+    "playgama/cover-portrait/${shortname}.png"
+  
+  convert "$src" -gravity center -extent "$(identify -format '%w' "$src")x$(identify -format '%w' "$src")" \
+    -resize "800x800" -gravity center -extent "800x800" -quality 95 \
+    "playgama/cover-square/${shortname}.png"
 done
 
-echo "=== Starting resize for all platforms ==="
+echo "  Done: playgama"
 
-for platform_data in "${PLATFORMS[@]}"; do
-  IFS='|' read -r platform icon_w icon_h thumb_w thumb_h screen_w screen_h <<< "$platform_data"
+# === CRAZYGAMES (standard dimensions) ===
+echo ""
+echo "--- Processing: crazygames ---"
+echo "  Icon: 512×512"
+echo "  Thumbnail: 800×450"
+echo "  Screenshot: 1280×720"
+
+mkdir -p crazygames/icons
+mkdir -p crazygames/thumbnails
+mkdir -p crazygames/screenshots
+
+for src in "${SOURCES[@]}"; do
+  basename="${src%.png}"
+  shortname="${basename##*_}"
   
-  echo ""
-  echo "--- Processing: $platform ---"
+  convert "$src" -gravity center -extent "$(identify -format '%w' "$src")x$(identify -format '%w' "$src")" \
+    -resize "512x512" -quality 95 "crazygames/icons/${shortname}.png"
   
-  mkdir -p "$platform/icons"
-  mkdir -p "$platform/thumbnails"
-  mkdir -p "$platform/screenshots"
+  convert "$src" -resize "800x450" -gravity center -extent "800x450" -quality 95 \
+    "crazygames/thumbnails/${shortname}.png"
   
-  for src in "${SOURCES[@]}"; do
-    basename="${src%.png}"
-    shortname="${basename##*_}"
-    
-    # Icon: center-crop to square, then resize
-    echo "  Icon: $shortname -> ${icon_w}x${icon_h}"
-    convert "$src" \
-      -gravity center -extent "$(identify -format '%w' "$src")x$(identify -format '%w' "$src")" \
-      -resize "${icon_w}x${icon_h}" \
-      -quality 95 \
-      "$platform/icons/${shortname}.png"
-    
-    # Thumbnail: resize to fit within bounds, no crop
-    echo "  Thumbnail: $shortname -> ${thumb_w}x${thumb_h}"
-    convert "$src" \
-      -resize "${thumb_w}x${thumb_h}" \
-      -gravity center -extent "${thumb_w}x${thumb_h}" \
-      -quality 95 \
-      "$platform/thumbnails/${shortname}.png"
-    
-    # Screenshot: resize to fit within bounds
-    echo "  Screenshot: $shortname -> ${screen_w}x${screen_h}"
-    convert "$src" \
-      -resize "${screen_w}x${screen_h}" \
-      -gravity center -extent "${screen_w}x${screen_h}" \
-      -quality 95 \
-      "$platform/screenshots/${shortname}.png"
-  done
-  
-  echo "  Done: $platform"
+  convert "$src" -resize "1280x720" -gravity center -extent "1280x720" -quality 95 \
+    "crazygames/screenshots/${shortname}.png"
 done
+
+echo "  Done: crazygames"
+
+# === YANDEX GAMES (standard dimensions) ===
+echo ""
+echo "--- Processing: yandex-games ---"
+echo "  Icon: 200×200"
+echo "  Cover: 1280×720"
+echo "  Screenshot: 1280×720"
+
+mkdir -p yandex-games/icons
+mkdir -p yandex-games/covers
+mkdir -p yandex-games/screenshots
+
+for src in "${SOURCES[@]}"; do
+  basename="${src%.png}"
+  shortname="${basename##*_}"
+  
+  convert "$src" -gravity center -extent "$(identify -format '%w' "$src")x$(identify -format '%w' "$src")" \
+    -resize "200x200" -quality 95 "yandex-games/icons/${shortname}.png"
+  
+  convert "$src" -resize "1280x720" -gravity center -extent "1280x720" -quality 95 \
+    "yandex-games/covers/${shortname}.png"
+  
+  convert "$src" -resize "1280x720" -gravity center -extent "1280x720" -quality 95 \
+    "yandex-games/screenshots/${shortname}.png"
+done
+
+echo "  Done: yandex-games"
+
+# === GAMEDISTRIBUTION (standard dimensions) ===
+echo ""
+echo "--- Processing: gamedistribution ---"
+echo "  Icon: 200×200"
+echo "  Thumbnail: 800×450"
+echo "  Screenshot: 1280×720"
+
+mkdir -p gamedistribution/icons
+mkdir -p gamedistribution/thumbnails
+mkdir -p gamedistribution/screenshots
+
+for src in "${SOURCES[@]}"; do
+  basename="${src%.png}"
+  shortname="${basename##*_}"
+  
+  convert "$src" -gravity center -extent "$(identify -format '%w' "$src")x$(identify -format '%w' "$src")" \
+    -resize "200x200" -quality 95 "gamedistribution/icons/${shortname}.png"
+  
+  convert "$src" -resize "800x450" -gravity center -extent "800x450" -quality 95 \
+    "gamedistribution/thumbnails/${shortname}.png"
+  
+  convert "$src" -resize "1280x720" -gravity center -extent "1280x720" -quality 95 \
+    "gamedistribution/screenshots/${shortname}.png"
+done
+
+echo "  Done: gamedistribution"
+
+# === GAMEPIX (standard dimensions) ===
+echo ""
+echo "--- Processing: gamepix ---"
+echo "  Icon: 200×200"
+echo "  Thumbnail: 800×450"
+echo "  Screenshot: 1280×720"
+
+mkdir -p gamepix/icons
+mkdir -p gamepix/thumbnails
+mkdir -p gamepix/screenshots
+
+for src in "${SOURCES[@]}"; do
+  basename="${src%.png}"
+  shortname="${basename##*_}"
+  
+  convert "$src" -gravity center -extent "$(identify -format '%w' "$src")x$(identify -format '%w' "$src")" \
+    -resize "200x200" -quality 95 "gamepix/icons/${shortname}.png"
+  
+  convert "$src" -resize "800x450" -gravity center -extent "800x450" -quality 95 \
+    "gamepix/thumbnails/${shortname}.png"
+  
+  convert "$src" -resize "1280x720" -gravity center -extent "1280x720" -quality 95 \
+    "gamepix/screenshots/${shortname}.png"
+done
+
+echo "  Done: gamepix"
+
+# === GAMEMONETIZE (standard dimensions) ===
+echo ""
+echo "--- Processing: gamemonetize ---"
+echo "  Icon: 200×200"
+echo "  Thumbnail: 800×450"
+echo "  Screenshot: 1280×720"
+
+mkdir -p gamemonetize/icons
+mkdir -p gamemonetize/thumbnails
+mkdir -p gamemonetize/screenshots
+
+for src in "${SOURCES[@]}"; do
+  basename="${src%.png}"
+  shortname="${basename##*_}"
+  
+  convert "$src" -gravity center -extent "$(identify -format '%w' "$src")x$(identify -format '%w' "$src")" \
+    -resize "200x200" -quality 95 "gamemonetize/icons/${shortname}.png"
+  
+  convert "$src" -resize "800x450" -gravity center -extent "800x450" -quality 95 \
+    "gamemonetize/thumbnails/${shortname}.png"
+  
+  convert "$src" -resize "1280x720" -gravity center -extent "1280x720" -quality 95 \
+    "gamemonetize/screenshots/${shortname}.png"
+done
+
+echo "  Done: gamemonetize"
 
 echo ""
 echo "=== All platforms processed ==="
-
-# Summary
 echo ""
-echo "=== File count summary ==="
-for platform_data in "${PLATFORMS[@]}"; do
-  IFS='|' read -r platform _ _ _ _ _ _ <<< "$platform_data"
-  if [ -d "$platform" ]; then
-    count_icons=$(find "$platform/icons" -name "*.png" | wc -l)
-    count_thumbs=$(find "$platform/thumbnails" -name "*.png" | wc -l)
-    count_screens=$(find "$platform/screenshots" -name "*.png" | wc -l)
-    echo "  $platform: $count_icons icons, $count_thumbs thumbnails, $count_screens screenshots"
-  fi
-done
-
+echo "=== Verification ==="
 echo ""
-echo "=== Sample dimensions check ==="
-for platform_data in "${PLATFORMS[@]}"; do
-  IFS='|' read -r platform icon_w icon_h _ _ _ _ <<< "$platform_data"
-  sample=$(ls "$platform/icons/"*.png 2>/dev/null | head -1)
-  if [ -n "$sample" ]; then
-    dim=$(identify -format '%wx%h' "$sample")
-    echo "  $platform icon: $dim (expected: ${icon_w}x${icon_h})"
-  fi
-done
-
+echo "Playgama (VERIFIED):"
+echo "  Landscape: $(identify playgama/cover-landscape/*.png 2>/dev/null | head -1 | awk '{print $3}')"
+echo "  Portrait: $(identify playgama/cover-portrait/*.png 2>/dev/null | head -1 | awk '{print $3}')"
+echo "  Square: $(identify playgama/cover-square/*.png 2>/dev/null | head -1 | awk '{print $3}')"
 echo ""
-echo "DONE!"
+echo "=== DONE ==="
